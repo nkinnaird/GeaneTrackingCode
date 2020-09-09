@@ -1,0 +1,80 @@
+// This fcl file takes output from tracking and calorimeter reconstruction and generates
+// art::Assns between the extrapolated tracks and calorimeter clusters (at the calos next to the trackers)
+
+#include "messageParams.fcl"
+#include "geom/strawtracker.fcl"
+
+process_name : TrackCaloMatching 
+
+source : {
+  module_type : RootInput
+  maxEvents   : -1
+}
+
+services : {
+
+  FileCatalogMetadata : {
+    applicationFamily  : "tracker"
+    applicationVersion : "v8_03_01"
+    fileType           : "offline"
+  }
+
+  message : {
+    debugModules : []
+    suppressInfo : []
+
+    destinations : {
+      LogToConsole : {
+        type       : "cout"
+        threshold  : "INFO"
+	categories : @local::message_categories
+      }
+      LogToFile : {
+        type      : "file"
+        filename  : "gm2tracker_trackCaloMatcher.log"
+        append    :  false
+        threshold : "INFO"
+        categories : @local::message_categories
+      }
+    }
+  }  // end of message services
+
+  Geometry : {
+    strawtracker : @local::strawtracker_geom
+  }
+
+  TFileService : {
+    fileName : "TrackCaloMatchingPlots.root"
+  }
+
+} // end of services block
+   
+physics : {
+
+  filters : {
+    noDigitsFilter : { module_type : NoDigitsFilter }
+  }
+
+  producers : {
+    trackCaloMatching : {
+      module_type           : TrackCaloMatching
+      clusterModuleLabel    : hitClusterDAQ 
+      clusterInstanceLabel  : cluster
+      coincidenceTimeWindow : [900,1200] // ns
+    }
+  } # end of producer block 
+
+  analyzers : {
+    trackCaloMatchingAna : {
+      module_type : TrackCaloMatchingAna
+      SelectEvents : [ "matchingPath" ]
+    }
+  } 
+
+  matchingPath : [ noDigitsFilter, trackCaloMatching ]
+  plotPath : [ trackCaloMatchingAna ]
+
+  trigger_paths : [matchingPath] 
+  end_paths     : [plotPath]
+
+} # end of physics block

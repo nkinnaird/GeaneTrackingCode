@@ -1,0 +1,20 @@
+BEGIN_PROLOG
+
+fastfitter_params :
+{
+  maxRadialFieldComponent : 0.05
+  requiredFitConverges    : false
+  requiredMergeConsistent : false
+  maxCircleChi2Formation  : 50.
+  maxLinearChi2Formation  : 50.
+  maxSlopeTolerance       : 25
+  maxSlopeCovariance      : 1.
+  maxProjectionTolerance  : 25.
+  maxProjectionCovariance : 1.
+  useHitsInFringeField    : false
+  useTruthData            : false
+  linearFitterSorter      : "NoFitter"  #NoFitter, HelixParam, SortBySeedsLinearFit, SortByViewsLinearFit
+  fitterName              : "SimpleCircleFitter" #"LSQMinimizer"
+}
+
+END_PROLOG

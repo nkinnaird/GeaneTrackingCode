@@ -1,0 +1,9 @@
+//Define common params here so that they are only defined in one place
+
+BEGIN_PROLOG
+
+driftVelocity       : 54.6e-3 //[mm/ns]
+tofBetweenModules   : 0.45 //[ns] - based on spacing of 5.3 inches - this is minimum time and different angles add one-way error in dca
+driftTimeResolution : 2.747253 // 2.4 // 1.835150 * driftVelocity = .1 mm measurement smearing, 2.747253 for .15 mm
+
+END_PROLOG

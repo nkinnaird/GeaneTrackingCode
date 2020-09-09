@@ -1,0 +1,21 @@
+BEGIN_PROLOG
+
+longtrack_params :
+{
+  shareSeeds                 : false
+  minSeedsPerFit             : 2
+  maxOverlapSeeds            : 1
+  maxTimeSeparation          : 75.
+  maxWireSeparation          : 5
+  maxSeedsToBeMultiTrackCand : 8
+  minPlanesPerFit            : 5
+  candidateSeedsMaxTime      : 20  #in ns
+  candidateSeedsStrictTime   : 5 
+  candidateSeedsMaxWire      : 5
+  candidateTracksMaxTime     : 60
+  avgSeedRMSTime             : 5.
+  requiredFitConverges       : false
+  applyClusterSelection      : true
+}
+
+END_PROLOG

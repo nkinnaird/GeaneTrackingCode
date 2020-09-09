@@ -1,0 +1,10 @@
+BEGIN_PROLOG
+
+cluster_params : 
+{
+  module_type : ClusterFormation
+  clusterPositionError : 2.5
+  maxDigitsOnIsland    : 100
+}
+
+END_PROLOG

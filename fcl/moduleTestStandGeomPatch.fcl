@@ -1,0 +1,20 @@
+//Patch standard tracker geometry for a test stand with a single module oriented horizontally (e.g. Liverpool)
+//Import this at the end of your fcl file
+
+//Patch world size
+services.Geometry.world.world_x: 2000
+services.Geometry.world.world_y: 2000
+services.Geometry.world.world_z: 2000
+
+//Place a single straw tracker module only
+services.Geometry.strawtracker.placeInVac : false
+services.Geometry.strawtracker.numberOfModulesPerStation : 1
+services.Geometry.strawtracker.whichScallopLocations : [0]
+services.Geometry.strawtracker.strawModuleRotation : 0 //Assumes +z is zenith
+services.Geometry.strawtracker.strawModuleXPosition: [0.] 
+services.Geometry.strawtracker.strawModuleYPosition: [0.]
+services.Geometry.strawtracker.strawModuleZPosition: [0.]
+services.Geometry.strawtracker.strawModuleRotationPhi: 0. //[deg] 
+services.Geometry.strawtracker.strawModuleRotationTheta: 90 //[deg] 
+services.Geometry.strawtracker.strawModuleRotationPsi: 0 //[deg] 
+

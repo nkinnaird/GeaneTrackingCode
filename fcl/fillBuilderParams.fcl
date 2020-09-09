@@ -1,0 +1,19 @@
+BEGIN_PROLOG
+
+fill_params : 
+{
+  module_type         : FillBuilder
+  Seed                : 54321
+  StoredMuons         : 1
+  StoredMuonsSigma    : 0
+  MaxEventsPerFile    : -1
+  KeepKillTracks      : false
+  KeepTrajectories    : false
+  KeepCaloHits        : false
+  KeepXtalHits        : false
+  KeepTrackingActions : false
+  KeepLookupHits      : false 
+  KeepGhostDetHits    : false
+}
+
+END_PROLOG

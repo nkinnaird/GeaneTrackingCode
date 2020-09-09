@@ -1,0 +1,18 @@
+BEGIN_PROLOG
+
+track_params : 
+{
+  module_type         : TrackFormation
+  fitterName          : "KalmanFitter"
+  minimumPlanes       : 5
+  maxIterations       : 25
+  maxTrackChi2Formation        : 500.
+  minTrackChi2DoFFormation     : 0.75
+  useStableHelixParamCondition : true
+  useTrackChi2Condition        : true
+  useKalmanGlobalChi2Calc      : true
+  promoteAllTrackCandidates    : true
+  testFitterUsingGeantHits     : true
+}
+
+END_PROLOG

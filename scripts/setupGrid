@@ -1,0 +1,9 @@
+#source this before running on grid or SAM
+#you can also put this in your ~/.shrc instead
+source /grid/fermiapp/products/common/etc/setups.sh
+setup jobsub_client
+setup fife_utils v2_7
+
+export SAM_EXPERIMENT=gm2
+export EXPERIMENT=gm2
+export ROLE=analysis

@@ -1,0 +1,15 @@
+BEGIN_PROLOG
+
+island_params :
+{ 
+  module_type : TimeIsland
+  maxTimeWindowWidth         : 80
+  finerTimeWindowWidth       : 20
+  relativeTimeWindowWidth    : 100
+  absoluteTimeWindowWidth    : 100
+  useAbsoluteTimeWindowWidth : false
+  sortSimDigits              : true 
+  sortRealDigits             : true 
+}     
+
+END_PROLOG

@@ -1,0 +1,16 @@
+#include "longTrackFinderParams.fcl"
+#include "fastFitterParams.fcl"
+
+BEGIN_PROLOG
+
+candidate_params :
+{
+  module_type            : TrackFinding
+  maxSeedsOnIsland       : 50
+  trackFinderName        : "LongTrackFinder" #SimpleTrackFinder
+  dcaTolerance           : 10
+  fastFitterParams       : @local::fastfitter_params
+  longTrackFinderParams  : @local::longtrack_params
+}
+
+END_PROLOG

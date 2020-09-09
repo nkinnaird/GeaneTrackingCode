@@ -1,0 +1,16 @@
+//Get the common params
+#include "strawCommonParams.fcl"
+
+BEGIN_PROLOG
+
+calDigit_params : 
+{
+  module_type         : DriftDistanceCal
+  driftVelocity       : @local::driftVelocity
+  driftTimeResolution : @local::driftTimeResolution 
+  calculatorName      : dataDerivedEstimator // linearDriftDistanceEstimator, garfieldDriftDistanceEstimator
+  useTrueDigitT0      : false
+  useDatabase         : false
+}
+
+END_PROLOG

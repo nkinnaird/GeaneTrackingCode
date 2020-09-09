@@ -1,0 +1,172 @@
+//Geometry & Field includes
+#include "geom/world.fcl"
+#include "geom/arc.fcl"
+#include "geom/vac.fcl"
+#include "geom/strawtracker.fcl"
+#include "geom/calorimeter.fcl"
+#include "geom/collimator.fcl"
+#include "geom/station.fcl"
+#include "geom/gm2FieldManager.fcl"
+#include "geom/quad_multipole_coefficients.fcl"
+#include "geom/magnetIronAndCryostat.fcl"
+#include "geom/inflector.fcl"
+#include "geom/kicker.fcl"
+#include "geom/quad.fcl"
+
+//Tracking Chain includes
+#include "recoIslandParams.fcl"
+#include "recoClusterParams.fcl"
+#include "recoSeedParams.fcl"
+#include "recoFindingParams.fcl"
+#include "recoT0FinderParams.fcl"
+#include "calDigitalizerParams.fcl"
+#include "digitTimeSyncParams.fcl"
+#include "geaneFitParams.fcl"
+#include "recoVertexParams.fcl"
+
+//Tracking Sim Chain includes
+#include "fillBuilderParams.fcl"
+#include "digitalizerParams.fcl"
+
+BEGIN_PROLOG
+trackingChain : {
+
+   // full geometry
+  geometry : {
+    Geometry : {
+      world                 : @local::world_geom
+      arc                   : @local::arc_geom
+      vac                   : @local::vac_geom
+      strawtracker          : @local::strawtracker_geom
+      magnetIronAndCryostat : @local::magnetIronAndCryostat_geom
+      inflector             : @local::inflector_geom  
+      kicker                : @local::kicker_geom
+      quad                  : @local::quad_geom
+      collimator            : @local::collimator_geom
+      calorimeter           : @local::calorimeter_geom
+      station               : @local::station_geom
+    } 
+
+    World                : {} 
+    Arc                  : {}
+    StrawTrackerCadMesh  : { 	 materialTracker : true }
+    Straws               : { strawMaterial : true
+	                     useSD : false       // keep as false, turn off sensitive detectors for recording hits so we don't generate more during reconstruction
+                       buildWires : false
+                           }
+    VacuumChamberCadMesh : { useSD : false }
+    TrolleyRailCadMesh   : { useSD : false }	
+    Quad                 : { useSD : false }
+    Collimator           : { useSD : false }
+    Station              : {}
+    Calorimeter : {
+       killAllParticles   : false
+       killOpticalPhotons : true // Using the lookup cerenkov process means this is ignored
+       useSD : false
+    }
+  }
+
+   //same as above, but with small reductions, for DQM and nearline
+   reducedGeometry : {
+    Geometry : {
+      world                 : @local::world_geom
+      arc                   : @local::arc_geom
+      vac                   : @local::vac_geom
+      strawtracker          : @local::strawtracker_geom
+      magnetIronAndCryostat : @local::magnetIronAndCryostat_geom
+      inflector             : @local::inflector_geom  
+      kicker                : @local::kicker_geom
+      quad                  : @local::quad_geom
+      collimator            : @local::collimator_geom
+      calorimeter           : @local::calorimeter_geom
+      station               : @local::station_geom
+    } 
+
+    World                : {} 
+    Arc                  : {}
+    StrawTrackerCadMesh  : { 
+	 materialTracker : true 
+	 buildFullManifolds : false
+      }
+    Straws               : { strawMaterial : true
+	                     useSD : false       // keep as false, turn off sensitive detectors for recording hits so we don't generate more during reconstruction
+                       buildWires : false
+                           }
+    VacuumChamberCadMesh : { useSD : false }
+    TrolleyRailCadMesh   : { useSD : false }	
+    Quad                 : { useSD : false }
+    Collimator           : { useSD : false }
+    //Station              : {}
+    //Calorimeter : {
+    //   killAllParticles   : false
+    //   killOpticalPhotons : true // Using the lookup cerenkov process means this is ignored
+    //   useSD : false
+    //}
+  }
+  
+  field : {
+    gm2FieldManager : {
+      qmcStore  : @local::qmcStore   // quad storage multipole coefficients
+      qmcScrape : @local::qmcScrape  // quad scrape multipole coefficients
+    }
+  }
+
+  producers : {
+
+    // For data, we need a module to build the geant4 detectors so that the geometries and coord systems are constructed and can
+    // be used in reconstruction.  These aren't needed for MC, but that should be caught in the module
+    artg4 : { module_type : BuildCoordSystems }
+
+    // hit housekeeping - these mostly do nothing now
+    removeFlash    : { module_type : RemoveFlash }
+    killStraws     : { module_type : KillStraws }
+    digitTimeSync  : @local::digitTimeSync_params
+    deadTime       : { module_type : ImposeDeadTime }
+   
+    // group by time
+    timeIslands   : @local::island_params
+    
+    // group spatially
+    clustering : @local::cluster_params
+    seeds      : @local::seed_params
+    
+    // find track candidates
+    trackCandidates : @local::candidate_params
+    
+    // Get t0 and dca for candidate
+    t0Finder      : @local::t0Finder_params
+    driftDistReco : @local::calDigit_params
+   
+    // fit the tracks
+    tracks : @local::geanefit_params
+    
+    // reconstruct the vertices
+    vertices : @local::vertex_params
+  }
+
+  trackingPath : [ artg4,
+                   removeFlash,
+                   killStraws,
+                   digitTimeSync,
+                   deadTime,
+                   timeIslands, 
+                   clustering, 
+                   seeds, 
+                   trackCandidates,
+                   t0Finder,
+                   driftDistReco,
+                   tracks,
+                   vertices ]
+
+  outputDrops : [
+   "keep gm2truth::GhostDetectorArtRecords_*_*_*",
+   "drop gm2truth::GhostDetectorArtRecords_*_trackerdummyplane_mdc*",
+   "drop gm2strawtracker::StrawDigitArtRecords_removeFlash_*_*",
+   "drop gm2strawtracker::StrawDigitArtRecords_killStraws_*_*",
+   "drop gm2strawtracker::StrawDigitArtRecords_digitTimeSync_*_*",
+   "drop gm2strawtracker::StrawSeedArtRecords_seeds_*_*",
+   "drop gm2strawtracker::TrackCandidateArtRecords_trackCandidates_*_*"
+  ]
+}
+
+END_PROLOG

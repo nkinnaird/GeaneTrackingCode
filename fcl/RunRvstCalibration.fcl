@@ -1,0 +1,501 @@
+#include "messageParams.fcl"
+#include "trackingConfig.fcl"
+
+#include "trackerLoggerParams.fcl"
+#include "strawUnpackerParams.fcl"
+#include "strawCleaningParams.fcl"
+#include "strawRawDigitParams.fcl"
+#include "strawDAQDigitParams.fcl"
+
+process_name : offline 
+
+source : {
+  module_type : MidasBankInput
+  detail : {
+    requestedBanks      : [ "STRW" ]
+     maxBankWordsToPrint : 0
+    online              : false
+    eventIDMask         : 0x1 // Select event builder events only
+  }
+}
+
+services : {
+  message : {
+    debugModules : []
+    suppressInfo : []
+
+    destinations : {
+      LogToConsole : {
+        type       : "cout"
+        threshold  : "INFO"
+        categories : @local::message_categories
+      }
+      LogToFile : {
+        type      : "file"
+        filename  : "gm2tracker_daq_full.log"
+        append    :  false
+        threshold : "INFO"
+        categories : @local::message_categories
+      }
+    }
+  } #end of message services
+ 
+
+  // the coordinate system data is used throughout the tracking code
+  // for now, the tracking uses GEANT for the coordinates
+  // to build the coordinates requires dependent on artg4
+
+  DetectorHolder    : {}
+  ActionHolder      : {}
+  CoordSystemsStore : {}
+  Gm2Constants      : {}
+  RandomNumberGenerator : {}
+
+  @table::trackingChain.geometry
+  @table::trackingChain.field
+
+  Database: {
+    conDBHost  : 'dbdata0vm.fnal.gov'
+    conDBPort  : '9091'
+    conDBName  : 'postgres_dev'
+  }
+
+  ODBHolder : {}
+ 
+  TFileService : { fileName : "RvstCalibration.root" }
+
+} // end of services block
+   
+
+physics : {
+  producers : {
+    // tracking detectors unpacking
+    strawUnpacker     : @local::strawUnpacking_params
+    strawCleaning     : @local::strawCleaning_params
+    strawRawDigitizer : @local::strawRawDigs_params
+    digitizer         : @local::strawDAQDigs_params
+    @table::trackingChain.producers
+   // fit the tracks
+    tracks32 : @local::geanefit_params
+    tracks33 : @local::geanefit_params
+    tracks34 : @local::geanefit_params
+    tracks35 : @local::geanefit_params
+    tracks36 : @local::geanefit_params
+    tracks37 : @local::geanefit_params
+    tracks38 : @local::geanefit_params
+    tracks39 : @local::geanefit_params
+    tracks40 : @local::geanefit_params
+    tracks41 : @local::geanefit_params
+    tracks42 : @local::geanefit_params
+    tracks43 : @local::geanefit_params
+    tracks44 : @local::geanefit_params
+    tracks45 : @local::geanefit_params
+    tracks46 : @local::geanefit_params
+    tracks47 : @local::geanefit_params
+    tracks48 : @local::geanefit_params
+    tracks49 : @local::geanefit_params
+    tracks50 : @local::geanefit_params
+    tracks51 : @local::geanefit_params
+    tracks52 : @local::geanefit_params
+    tracks53 : @local::geanefit_params
+    tracks54 : @local::geanefit_params
+    tracks55 : @local::geanefit_params
+    tracks56 : @local::geanefit_params
+    tracks57 : @local::geanefit_params
+    tracks58 : @local::geanefit_params
+    tracks59 : @local::geanefit_params
+    tracks60 : @local::geanefit_params
+    tracks61 : @local::geanefit_params
+    tracks62 : @local::geanefit_params
+    tracks63 : @local::geanefit_params
+  }
+
+  filters : {
+  timeIslandsSelector : {
+    		       module_type : TimeIslandSelector
+  		       islandModuleLabel : timeIslands
+  		       islandInstanceName : straws
+  		       outputInstanceName : straws
+	}	       
+    TrackFilter : {
+      module_type  : TrackerFillTypeFilter
+      fillType     : 1
+      throwOnEmptyHeaderCollection : false
+    }
+  }
+
+  analyzers : {
+    summaryPlots      : {
+      module_type : SummaryPlots
+      SelectEvents : ["path"]
+    }
+    geanePlots        : {
+      module_type : GeanePlots 
+      SelectEvents : ["path"]
+    }
+    extrapPlots       : {
+      module_type : TrackExtrapolationAna
+      SelectEvents : ["path"]
+    }
+    RvstCal32	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal33	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal34	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal35	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal36	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal37	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal38	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal39	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal40	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal41	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal42	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal43	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal44	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal45	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal46	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal47	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal48	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal49	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal50	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal51	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal52	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal53	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal54	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal55	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal56	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal57	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal58	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal59	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal60	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal61	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal62	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+    RvstCal63	: {
+      module_type : RvstCalibration
+      SelectEvents : ["path"]
+    }
+
+   } 			
+
+  path          : [ strawUnpacker, strawCleaning, TrackFilter, strawRawDigitizer, digitizer, artg4,
+                   removeFlash,
+                   killStraws,
+                   digitTimeSync,
+                   deadTime,
+                   timeIslands,
+		   timeIslandsSelector,
+                   clustering, 
+                   seeds, 
+                   trackCandidates,
+                   t0Finder,
+                   driftDistReco,
+                   tracks32, tracks33, tracks34, tracks35, tracks36, tracks37, tracks38, tracks39,
+		   tracks40, tracks41, tracks42, tracks43, tracks44, tracks45, tracks46, tracks47, tracks48, tracks49,
+		   tracks50, tracks51, tracks52, tracks53, tracks54, tracks55, tracks56, tracks57, tracks58, tracks59,
+		   tracks60, tracks61, tracks62, tracks63 		 
+                   ]
+  plot : [RvstCal32, RvstCal33, RvstCal34, RvstCal35, RvstCal36, RvstCal37, RvstCal38, RvstCal39,
+       	 RvstCal40, RvstCal41, RvstCal42, RvstCal43, RvstCal44, RvstCal45, RvstCal46, RvstCal47, RvstCal48, RvstCal49,
+       	 RvstCal50, RvstCal51, RvstCal52, RvstCal53, RvstCal54, RvstCal55, RvstCal56, RvstCal57, RvstCal58, RvstCal59,
+       	 RvstCal60, RvstCal61, RvstCal62, RvstCal63
+	 ]
+  trigger_paths : [path]
+  end_paths     : [plot]
+} # end of physics block
+
+
+physics.producers.strawCleaning.noErrorsAllowed  : false
+physics.producers.strawCleaning.allErrorsAllowed : true
+
+physics.producers.t0Finder.meanTimeOffset : 34 // 36.5 is for 1550V, 34 for 1625V. Different for Sim.
+
+physics.filters.timeIslandsSelector.maxHitsPerLayer  : 1
+physics.producers.clustering.timeIslandModuleLabel : timeIslandsSelector
+
+
+physics.producers.tracks32.skipLayers : [32,64]
+physics.analyzers.RvstCal32.GEANEModuleLabel : tracks32
+physics.analyzers.RvstCal32.treeName : "RvstCalibration_32_64"
+physics.analyzers.RvstCal32.plotLayers : [32,64]
+physics.analyzers.RvstCal32.dumpNtuple : true
+
+physics.producers.tracks33.skipLayers : [33,65]
+physics.analyzers.RvstCal33.GEANEModuleLabel : tracks33
+physics.analyzers.RvstCal33.treeName : "RvstCalibration_33_65"
+physics.analyzers.RvstCal33.plotLayers : [33,65]
+physics.analyzers.RvstCal33.dumpNtuple : true
+
+physics.producers.tracks34.skipLayers : [34,66]
+physics.analyzers.RvstCal34.GEANEModuleLabel : tracks34
+physics.analyzers.RvstCal34.treeName : "RvstCalibration_34_66"
+physics.analyzers.RvstCal34.plotLayers : [34,66]
+physics.analyzers.RvstCal34.dumpNtuple : true
+
+physics.producers.tracks35.skipLayers : [35,67]
+physics.analyzers.RvstCal35.GEANEModuleLabel : tracks35
+physics.analyzers.RvstCal35.treeName : "RvstCalibration_35_67"
+physics.analyzers.RvstCal35.plotLayers : [35,67]
+physics.analyzers.RvstCal35.dumpNtuple : true
+
+physics.producers.tracks36.skipLayers : [36,68]
+physics.analyzers.RvstCal36.GEANEModuleLabel : tracks36
+physics.analyzers.RvstCal36.treeName : "RvstCalibration_36_68"
+physics.analyzers.RvstCal36.plotLayers : [36,68]
+physics.analyzers.RvstCal36.dumpNtuple : true
+
+physics.producers.tracks37.skipLayers : [37,69]
+physics.analyzers.RvstCal37.GEANEModuleLabel : tracks37
+physics.analyzers.RvstCal37.treeName : "RvstCalibration_37_69"
+physics.analyzers.RvstCal37.plotLayers : [37,69]
+physics.analyzers.RvstCal37.dumpNtuple : true
+
+physics.producers.tracks38.skipLayers : [38,70]
+physics.analyzers.RvstCal38.GEANEModuleLabel : tracks38
+physics.analyzers.RvstCal38.treeName : "RvstCalibration_38_70"
+physics.analyzers.RvstCal38.plotLayers : [38,70]
+physics.analyzers.RvstCal38.dumpNtuple : true
+
+physics.producers.tracks39.skipLayers : [39,71]
+physics.analyzers.RvstCal39.GEANEModuleLabel : tracks39
+physics.analyzers.RvstCal39.treeName : "RvstCalibration_39_71"
+physics.analyzers.RvstCal39.plotLayers : [39,71]
+physics.analyzers.RvstCal39.dumpNtuple : true
+
+physics.producers.tracks40.skipLayers : [40,72]
+physics.analyzers.RvstCal40.GEANEModuleLabel : tracks40
+physics.analyzers.RvstCal40.treeName : "RvstCalibration_40_72"
+physics.analyzers.RvstCal40.plotLayers : [40,72]
+physics.analyzers.RvstCal40.dumpNtuple : true
+
+physics.producers.tracks41.skipLayers : [41,73]
+physics.analyzers.RvstCal41.GEANEModuleLabel : tracks41
+physics.analyzers.RvstCal41.treeName : "RvstCalibration_41_73"
+physics.analyzers.RvstCal41.plotLayers : [41,73]
+physics.analyzers.RvstCal41.dumpNtuple : true
+
+physics.producers.tracks42.skipLayers : [42,74]
+physics.analyzers.RvstCal42.GEANEModuleLabel : tracks42
+physics.analyzers.RvstCal42.treeName : "RvstCalibration_42_74"
+physics.analyzers.RvstCal42.plotLayers : [42,74]
+physics.analyzers.RvstCal42.dumpNtuple : true
+
+physics.producers.tracks43.skipLayers : [43,75]
+physics.analyzers.RvstCal43.GEANEModuleLabel : tracks43
+physics.analyzers.RvstCal43.treeName : "RvstCalibration_43_75"
+physics.analyzers.RvstCal43.plotLayers : [43,75]
+physics.analyzers.RvstCal43.dumpNtuple : true
+
+physics.producers.tracks44.skipLayers : [44,76]
+physics.analyzers.RvstCal44.GEANEModuleLabel : tracks44
+physics.analyzers.RvstCal44.treeName : "RvstCalibration_44_76"
+physics.analyzers.RvstCal44.plotLayers : [44,76]
+physics.analyzers.RvstCal44.dumpNtuple : true
+
+physics.producers.tracks45.skipLayers : [45,77]
+physics.analyzers.RvstCal45.GEANEModuleLabel : tracks45
+physics.analyzers.RvstCal45.treeName : "RvstCalibration_45_77"
+physics.analyzers.RvstCal45.plotLayers : [45,77]
+physics.analyzers.RvstCal45.dumpNtuple : true
+
+physics.producers.tracks46.skipLayers : [46,78]
+physics.analyzers.RvstCal46.GEANEModuleLabel : tracks46
+physics.analyzers.RvstCal46.treeName : "RvstCalibration_46_78"
+physics.analyzers.RvstCal46.plotLayers : [46,78]
+physics.analyzers.RvstCal46.dumpNtuple : true
+
+physics.producers.tracks47.skipLayers : [47,79]
+physics.analyzers.RvstCal47.GEANEModuleLabel : tracks47
+physics.analyzers.RvstCal47.treeName : "RvstCalibration_47_79"
+physics.analyzers.RvstCal47.plotLayers : [47,79]
+physics.analyzers.RvstCal47.dumpNtuple : true
+
+physics.producers.tracks48.skipLayers : [48,80]
+physics.analyzers.RvstCal48.GEANEModuleLabel : tracks48
+physics.analyzers.RvstCal48.treeName : "RvstCalibration_48_80"
+physics.analyzers.RvstCal48.plotLayers : [48,80]
+physics.analyzers.RvstCal48.dumpNtuple : true
+
+physics.producers.tracks49.skipLayers : [49,81]
+physics.analyzers.RvstCal49.GEANEModuleLabel : tracks49
+physics.analyzers.RvstCal49.treeName : "RvstCalibration_49_81"
+physics.analyzers.RvstCal49.plotLayers : [49,81]
+physics.analyzers.RvstCal49.dumpNtuple : true
+
+physics.producers.tracks50.skipLayers : [50,82]
+physics.analyzers.RvstCal50.GEANEModuleLabel : tracks50
+physics.analyzers.RvstCal50.treeName : "RvstCalibration_50_82"
+physics.analyzers.RvstCal50.plotLayers : [50,82]
+physics.analyzers.RvstCal50.dumpNtuple : true
+
+physics.producers.tracks51.skipLayers : [51,83]
+physics.analyzers.RvstCal51.GEANEModuleLabel : tracks51
+physics.analyzers.RvstCal51.treeName : "RvstCalibration_51_83"
+physics.analyzers.RvstCal51.plotLayers : [51,83]
+physics.analyzers.RvstCal51.dumpNtuple : true
+
+physics.producers.tracks52.skipLayers : [52,84]
+physics.analyzers.RvstCal52.GEANEModuleLabel : tracks52
+physics.analyzers.RvstCal52.treeName : "RvstCalibration_52_84"
+physics.analyzers.RvstCal52.plotLayers : [52,84]
+physics.analyzers.RvstCal52.dumpNtuple : true
+
+physics.producers.tracks53.skipLayers : [53,85]
+physics.analyzers.RvstCal53.GEANEModuleLabel : tracks53
+physics.analyzers.RvstCal53.treeName : "RvstCalibration_53_85"
+physics.analyzers.RvstCal53.plotLayers : [53,85]
+physics.analyzers.RvstCal53.dumpNtuple : true
+
+physics.producers.tracks54.skipLayers : [54,86]
+physics.analyzers.RvstCal54.GEANEModuleLabel : tracks54
+physics.analyzers.RvstCal54.treeName : "RvstCalibration_54_86"
+physics.analyzers.RvstCal54.plotLayers : [54,86]
+physics.analyzers.RvstCal54.dumpNtuple : true
+
+physics.producers.tracks55.skipLayers : [55,87]
+physics.analyzers.RvstCal55.GEANEModuleLabel : tracks55
+physics.analyzers.RvstCal55.treeName : "RvstCalibration_55_87"
+physics.analyzers.RvstCal55.plotLayers : [55,87]
+physics.analyzers.RvstCal55.dumpNtuple : true
+
+physics.producers.tracks56.skipLayers : [56,88]
+physics.analyzers.RvstCal56.GEANEModuleLabel : tracks56
+physics.analyzers.RvstCal56.treeName : "RvstCalibration_56_88"
+physics.analyzers.RvstCal56.plotLayers : [56,88]
+physics.analyzers.RvstCal56.dumpNtuple : true
+
+physics.producers.tracks57.skipLayers : [57,89]
+physics.analyzers.RvstCal57.GEANEModuleLabel : tracks57
+physics.analyzers.RvstCal57.treeName : "RvstCalibration_57_89"
+physics.analyzers.RvstCal57.plotLayers : [57,89]
+physics.analyzers.RvstCal57.dumpNtuple : true
+
+physics.producers.tracks58.skipLayers : [58,90]
+physics.analyzers.RvstCal58.GEANEModuleLabel : tracks58
+physics.analyzers.RvstCal58.treeName : "RvstCalibration_58_90"
+physics.analyzers.RvstCal58.plotLayers : [58,90]
+physics.analyzers.RvstCal58.dumpNtuple : true
+
+physics.producers.tracks59.skipLayers : [59,91]
+physics.analyzers.RvstCal59.GEANEModuleLabel : tracks59
+physics.analyzers.RvstCal59.treeName : "RvstCalibration_59_91"
+physics.analyzers.RvstCal59.plotLayers : [59,91]
+physics.analyzers.RvstCal59.dumpNtuple : true
+
+physics.producers.tracks60.skipLayers : [60,92]
+physics.analyzers.RvstCal60.GEANEModuleLabel : tracks60
+physics.analyzers.RvstCal60.treeName : "RvstCalibration_60_92"
+physics.analyzers.RvstCal60.plotLayers : [60,92]
+physics.analyzers.RvstCal60.dumpNtuple : true
+
+physics.producers.tracks61.skipLayers : [61,93]
+physics.analyzers.RvstCal61.GEANEModuleLabel : tracks61
+physics.analyzers.RvstCal61.treeName : "RvstCalibration_61_93"
+physics.analyzers.RvstCal61.plotLayers : [61,93]
+physics.analyzers.RvstCal61.dumpNtuple : true
+
+physics.producers.tracks62.skipLayers : [62,94]
+physics.analyzers.RvstCal62.GEANEModuleLabel : tracks62
+physics.analyzers.RvstCal62.treeName : "RvstCalibration_62_94"
+physics.analyzers.RvstCal62.plotLayers : [62,94]
+physics.analyzers.RvstCal62.dumpNtuple : true
+
+physics.producers.tracks63.skipLayers : [63,95]
+physics.analyzers.RvstCal63.GEANEModuleLabel : tracks63
+physics.analyzers.RvstCal63.treeName : "RvstCalibration_63_95"
+physics.analyzers.RvstCal63.plotLayers : [63,95]
+physics.analyzers.RvstCal63.dumpNtuple : true
+
+
+
+

@@ -1,0 +1,20 @@
+//Get the common params
+#include "strawCommonParams.fcl"
+
+BEGIN_PROLOG
+
+digit_params : 
+{
+   module_type             : Digitalizer
+   driftTimeModelName      : "GarfieldDriftModel"
+   driftVelocity           : @local::driftVelocity
+   driftTimeResolution     : @local::driftTimeResolution
+   kineticEnergyThreshold  : 1.0
+   includeSecondaryEloss   : true
+   promoteSecondaryToDigit : true
+   removeFailedEfficHits   : true
+   allowNegativeTimes      : true
+   smearedDriftTimeSeed    : 0
+}
+
+END_PROLOG

@@ -1,0 +1,26 @@
+BEGIN_PROLOG
+
+geanefit_params :
+{
+     module_type : GeaneReco
+
+     G4EVERBOSE      : 0 // Geant4 error propagation debug verbose
+     trackingVerbose : 0 // Geant4 tracking verbose
+     matrixDebug     : false
+
+     onlyPrimaryPositrons  : false
+
+     numPassesWireFit : 3
+     numPassesSeqFit  : 3 // should be at least 2, but can maybe be less than the standard 4 since the wirefit and sequence checking gets it most of the way there
+
+     convergenceCriteria : 0.1
+     useCircleGuess      : true
+     lockLowDCAs         : 0     // set as zero for false, a positive number means the radius in mm that a hit is locked to the center
+     useNodes            : false // can grab hit sides from the nodes if wished
+
+     fitMode             : "mainFit"     // truthLRFit, wireFit, mainFit, fullSeqFit
+     fitterType          : "fullFitter"  // options are 'fullFitter' and 'fastFitter'
+     useTangentLR        : true
+}
+
+END_PROLOG

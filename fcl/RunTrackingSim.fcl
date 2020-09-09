@@ -1,0 +1,124 @@
+#include "messageParams.fcl"
+#include "trackingConfig.fcl"
+
+process_name : offline
+
+source : 
+{
+  module_type : RootInput
+  maxEvents   : -1
+}
+
+services : 
+{
+  FileCatalogMetadata : {
+      applicationFamily  : "tracker"
+      applicationVersion : "v9_20_00"
+      fileType           : "offline"
+  }
+
+  message : {
+    debugModules : []
+    suppressInfo : []
+
+    destinations : {
+      LogToConsole : {
+        type       : "cout"
+        threshold  : "INFO"
+        categories : @local::message_categories
+      }
+      LogToFile : {
+        type      : "file"
+        filename  : "gm2tracker_particle_gun_full.log"
+        append    :  false
+        threshold : "INFO"
+        categories : @local::message_categories
+      }
+    }
+  } #end of message services
+ 
+
+  // the coordinate system data is used throughout the tracking code
+  // for now, the tracking uses GEANT for the coordinates
+  // to build the coordinates requires dependent on artg4
+
+  DetectorHolder    : {}
+  ActionHolder      : {}
+  CoordSystemsStore : {}
+  Gm2Constants      : {}
+  RandomNumberGenerator : {}
+
+  @table::trackingChain.geometry
+  @table::trackingChain.field
+
+  Database: {
+    conDBHost  : 'dbdata0vm.fnal.gov'
+    conDBPort  : '9091'
+    conDBName  : 'postgres_dev'
+  }
+
+  scheduler : { errorOnFailureToPut : false }
+  TrackQuality : {}
+} // end of services block
+   
+
+
+physics : 
+{
+  producers : {
+
+     // digitization of simulation
+     digitizer : @local::digit_params
+
+     // Reco chain
+     @table::trackingChain.producers
+
+  } # end of producer block 
+
+  filters : {
+
+     // Put many muons into same fill 
+     fillEvents : @local::fill_params
+
+  } # end of filter block
+
+  // Note this doesn't have DQC but we have to put this name here or we'd need different
+  // versions of RunTrackingPlots for data and MC!
+  strawPathwithDQC : [fillEvents, digitizer, @sequence::trackingChain.trackingPath]
+
+  outputPath    : [out] 
+
+  trigger_paths : [strawPathwithDQC]
+  end_paths     : [outputPath]
+} # end of physics block
+
+outputs :
+{
+  out : { 
+     module_type  : RootOutput
+     fileName     : "gm2tracker_particle_gun_full.root"
+     dataTier     : "full"
+
+     outputCommands : [ "keep *",
+	                "drop gm2truth*_*_*_mdc*",
+                        @sequence::trackingChain.outputDrops
+                      ] 
+
+     SelectEvents : ["strawPathwithDQC"] 
+     FCMDPlugins  : [ { plugin_type : Metadata 
+                        fhicl_name  : "gm2tracker_particle_gun_full.fcl"
+                        requestid   : "1"
+                        run_config  : "commission" }]
+  }
+
+} # end of outputs block
+
+# dca calc patched parameters
+physics.producers.driftDistReco.calculatorName : garfieldDriftDistanceEstimator
+
+# t0 finder patches
+physics.producers.t0Finder.meanTimeOffset : 24.6
+
+# Don't shift TDC times (this is only to align cable lengths in data)
+physics.producers.digitTimeSync.tdcOffsets : [0,0,0,0]
+physics.producers.digitTimeSync.perStationCaloSyncOffsets : [0,0,0]

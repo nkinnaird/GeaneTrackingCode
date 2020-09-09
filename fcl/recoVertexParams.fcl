@@ -1,0 +1,58 @@
+BEGIN_PROLOG
+
+vertex_params : 
+{
+   module_type    : TrackExtrapolation
+   extrapolater   : "RKExtrapolater" // Options are: "RKExtrapolater"
+   
+   // important options
+   useTruth       : false
+   checkVolumes : true
+   doBackwardsExtrap : true
+   doForwardsExtrap : true
+   storeFailedEvents : false
+   
+   // other options that are often changed
+   keepSteps         : false // NOTE: setting 'true' greatly increases file size
+   returnAtHitVolume : false
+   returnAtTangentPoint     : true
+   extrapolateToTrueAzimuth : false
+
+   // p value cut
+   cutPoorPValues : false
+   pValueCut : 0.005
+
+   // momentum cut (MeV)
+   pmin : 0
+   pmax : 99999 
+   
+   // for forwards extrap to calorimeter - z pos of target plane in tracker station coords. 
+   targetZpos : -70.6
+
+   // detailed volume hit parameters
+   keepHitVolumes : true
+   onlyKeepVolumeEvents : false
+   onlyKeepStepsInVolume : false
+
+   // sim options
+   useOnlyPDPs    : true
+   smearStartMomentum : false
+   smearingFactor : 0.02
+   
+   // detailed extrapolation options
+   minNumPlanes   : 0
+   numberOfSteps  : 10000
+   stepsBeyondMin : 5
+   distanceBeyondTangentPoint : 10.0 // cm
+   extrapolationDistance  : 1000.0 // cm 
+   useLargeStepsInStorageField : true
+   useSmallStepsAtLowRadius : true
+   useSmallStepsNearTangentPoint : true
+   stepSize : 0.5 // cm
+   largeStepSize : 0.02 // cm
+   smallStepSize : 0.05 // cm
+   initialRadius : 45 // mm, this is R_magic - e+ radial pos
+   tolerance : 0.0 // TODO add this to fclOptions
+}
+
+END_PROLOG

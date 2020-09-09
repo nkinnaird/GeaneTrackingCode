@@ -1,0 +1,87 @@
+#include "messageParams.fcl"
+#include "trackingConfig.fcl"
+
+process_name : nearlineTracking 
+
+source : 
+{
+  module_type : RootInput
+  maxEvents   : -1
+}
+
+services : 
+{
+   DetectorHolder    : {}
+   ActionHolder      : {}
+   CoordSystemsStore : {}
+   Gm2Constants      : {}
+   RandomNumberGenerator : {}
+   
+   @table::trackingChain.reducedGeometry
+   @table::trackingChain.field
+ 
+   message : {
+      debugModules : []
+      suppressInfo : []
+      destinations : {
+	 LogToConsole : {
+            type       : "cout"
+            threshold  : "INFO"
+	    categories : @local::message_categories
+	 }
+      }
+   }
+  
+   TFileService: {
+      //To make sure out file is unique, put the input file name at the end.
+      //The %# is an unfortunate concequence of, as is the additional file you get, see:
+      //https://cdcvs.fnal.gov/redmine/projects/art/wiki/Output_file_renaming_for_ROOT_files
+      fileName: "NearlinePlots_%#_%ifn"
+      fileProperties : {
+         maxInputFiles: 1
+      }
+   }
+   
+   TrackQuality : {}
+} // end of services block
+
+physics : 
+{
+
+   producers : {
+      @table::trackingChain.producers
+   }
+   
+   analyzers : {
+      
+      nearlinePlots      : {
+	 module_type : NearlinePlots
+	 SelectEvents:["path"]
+      }
+   }
+   
+   //the digits have already been run up to dead time, so start from time islands
+   path : [ 
+      artg4,
+      timeIslands, 
+      clustering, 
+      seeds, 
+      trackCandidates,
+      t0Finder,
+      driftDistReco,
+      tracks,
+      vertices]
+   
+   plot : [nearlinePlots]
+   
+   trigger_paths : [path]
+   end_paths     : [plot]
+   
+} # end of physics block
+
+physics.producers.t0Finder.meanTimeOffset : 34 // 36.5 is for 1550V, 34 for 1625V. Different for Sim.
+physics.producers.vertices.doForwardsExtrap : false 
+
+physics.producers.tracks.onlyTrackGoodCandidates : true
+physics.producers.vertices.onlyExtrapolateGoodTracks : true
+
